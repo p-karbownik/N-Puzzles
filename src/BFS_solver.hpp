@@ -5,8 +5,6 @@
 #include<vector>
 #include<unordered_set>
 #include<queue>
-#include<type_traits>
-#include<sstream>
 
 using namespace std;
 
@@ -62,83 +60,14 @@ class BFS_solver {
     int puzzleSize;
 
 public:
-    BFS_solver(vector<vector<int> > init) {
-        root = new Node(init);
-        graph.insert(*root);
-        puzzleSize = init.size();
-        goal = vector<vector<int> > (puzzleSize, vector<int> (puzzleSize));
-        int c = 1;
-        for (int i = 0; i < puzzleSize; i++) {
-            for (int j = 0; j < puzzleSize; j++) {
-                goal.position[i][j] = c;
-                c++;
-            }
-        }
-        goal.position[puzzleSize - 1][puzzleSize - 1] = -1;
-        goal.y_empty = puzzleSize - 1;
-        goal.x_empty = puzzleSize - 1;
-    }
+    BFS_solver(vector<vector<int> > init);
 
-    Node* moveUp(Node *current) {
-        return new Node(current, current->x_empty, current->y_empty + 1, Direction::Up);
-    }
-    Node* moveRight(Node *current) {
-        return new Node(current, current->x_empty - 1, current->y_empty, Direction::Right);
-    }
-    Node* moveDown(Node *current) {
-        return new Node(current, current->x_empty, current->y_empty - 1, Direction::Down);
-    }
-    Node* moveLeft(Node *current) {
-        return new Node(current, current->x_empty + 1, current->y_empty, Direction::Left);
-    }
+    Node* moveUp(Node *current);
+    Node* moveRight(Node *current);
+    Node* moveDown(Node *current);
+    Node* moveLeft(Node *current);
 
-    vector<Node*> BFS() {
-        queue<Node*> toCheck;
-        toCheck.push(root);
-        while(!toCheck.empty()) {
-            Node* current = toCheck.front();
-            toCheck.pop();
-            if(*current == goal) {
-                vector<Node*> path;
-                path.push_back(current);
-                while(current->parent != nullptr) {
-                    // cout << current->y_empty << ' ' << current->x_empty << "  ";
-                    cout << ((current->lastMove == Direction::Up) ? "UP" : ((current->lastMove == Direction::Right) ? "RIGHT" : ((current->lastMove == Direction::Down) ? "DOWN" : "LEFT"))) << " ";
-                    current = current->parent;
-                    path.push_back(current);
-                }
-                return path;
-            }
-            if (current->y_empty < puzzleSize - 1) {
-                Node *nextUp = moveUp(current);
-                if (!graph.count(*nextUp)) {
-                    graph.insert(*nextUp);
-                    toCheck.push(nextUp);
-                }
-            }
-            if (current->y_empty > 0) {
-                Node *nextDown = moveDown(current);
-                if (!graph.count(*nextDown)) {
-                    graph.insert(*nextDown);
-                    toCheck.push(nextDown);
-                }
-            }
-            if (current->x_empty > 0) {
-                Node *nextRight = moveRight(current);
-                if (!graph.count(*nextRight)) {
-                    graph.insert(*nextRight);
-                    toCheck.push(nextRight);
-                }
-            }
-            if (current->x_empty < puzzleSize - 1) {
-                Node *nextLeft = moveLeft(current);
-                if (!graph.count(*nextLeft)) {
-                    graph.insert(*nextLeft);
-                    toCheck.push(nextLeft);
-                }
-            }
-        }
-    }
+    vector<Node*> BFS();
 };
 
 #endif //NPUZZLES_BFS_SOLVER
