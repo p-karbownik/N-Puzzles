@@ -5,6 +5,8 @@
 #include<vector>
 #include<unordered_set>
 #include<queue>
+#include<type_traits>
+#include<sstream>
 
 using namespace std;
 
@@ -42,7 +44,7 @@ class BFS_solver {
         }
         bool operator==(const Node &that) const {
             for (int i = 0; i < this->position.size() && i < that.position.size(); i++) {
-                for (int j = 0; j < this->position[1].size() && j < that.position[1].size(); j++) {
+                for (int j = 0; j < this->position[i].size() && j < that.position[i].size(); j++) {
                     if (this->position[i][j] != that.position[i][j]) return false;
                 }
             }
@@ -73,19 +75,21 @@ public:
             }
         }
         goal.position[puzzleSize - 1][puzzleSize - 1] = -1;
+        goal.y_empty = puzzleSize - 1;
+        goal.x_empty = puzzleSize - 1;
     }
 
-    Node moveUp(Node *current) {
-        return Node(current, current->x_empty, current->y_empty + 1, Direction::Up);
+    Node* moveUp(Node *current) {
+        return new Node(current, current->x_empty, current->y_empty + 1, Direction::Up);
     }
-    Node moveRight(Node *current) {
-        return Node(current, current->x_empty - 1, current->y_empty, Direction::Right);
+    Node* moveRight(Node *current) {
+        return new Node(current, current->x_empty - 1, current->y_empty, Direction::Right);
     }
-    Node moveDown(Node *current) {
-        return Node(current, current->x_empty, current->y_empty - 1, Direction::Down);
+    Node* moveDown(Node *current) {
+        return new Node(current, current->x_empty, current->y_empty - 1, Direction::Down);
     }
-    Node moveLeft(Node *current) {
-        return Node(current, current->x_empty + 1, current->y_empty, Direction::Left);
+    Node* moveLeft(Node *current) {
+        return new Node(current, current->x_empty + 1, current->y_empty, Direction::Left);
     }
 
     vector<Node*> BFS() {
@@ -98,38 +102,39 @@ public:
                 vector<Node*> path;
                 path.push_back(current);
                 while(current->parent != nullptr) {
-                    cout << current->x_empty << ' ' << current->y_empty << "  ";
+                    // cout << current->y_empty << ' ' << current->x_empty << "  ";
+                    cout << ((current->lastMove == Direction::Up) ? "UP" : ((current->lastMove == Direction::Right) ? "RIGHT" : ((current->lastMove == Direction::Down) ? "DOWN" : "LEFT"))) << " ";
                     current = current->parent;
                     path.push_back(current);
                 }
                 return path;
             }
             if (current->y_empty < puzzleSize - 1) {
-                Node nextUp = moveUp(current);
-                if (!graph.count(nextUp)) {
-                    graph.insert(nextUp);
-                    toCheck.push(&nextUp);
+                Node *nextUp = moveUp(current);
+                if (!graph.count(*nextUp)) {
+                    graph.insert(*nextUp);
+                    toCheck.push(nextUp);
                 }
             }
             if (current->y_empty > 0) {
-                Node nextUp = moveDown(current);
-                if (!graph.count(nextUp)) {
-                    graph.insert(nextUp);
-                    toCheck.push(&nextUp);
-                }
-            }
-            if (current->x_empty < puzzleSize - 1) {
-                Node nextUp = moveRight(current);
-                if (!graph.count(nextUp)) {
-                    graph.insert(nextUp);
-                    toCheck.push(&nextUp);
+                Node *nextDown = moveDown(current);
+                if (!graph.count(*nextDown)) {
+                    graph.insert(*nextDown);
+                    toCheck.push(nextDown);
                 }
             }
             if (current->x_empty > 0) {
-                Node nextUp = moveLeft(current);
-                if (!graph.count(nextUp)) {
-                    graph.insert(nextUp);
-                    toCheck.push(&nextUp);
+                Node *nextRight = moveRight(current);
+                if (!graph.count(*nextRight)) {
+                    graph.insert(*nextRight);
+                    toCheck.push(nextRight);
+                }
+            }
+            if (current->x_empty < puzzleSize - 1) {
+                Node *nextLeft = moveLeft(current);
+                if (!graph.count(*nextLeft)) {
+                    graph.insert(*nextLeft);
+                    toCheck.push(nextLeft);
                 }
             }
         }
