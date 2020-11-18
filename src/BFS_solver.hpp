@@ -7,12 +7,13 @@
 
 class BFS_solver {
     enum class Direction {Up, Right, Down, Left, None};
-    class Node {
-    public:
+
+    struct Node {
         Node *parent;
         int y_empty, x_empty;
         std::vector<std::vector<int> > position;
         Direction lastMove;
+
         Node() {}
         Node(std::vector<std::vector<int> > pos);
         Node(Node *prev, int x, int y, Direction lm);
@@ -23,6 +24,7 @@ class BFS_solver {
             return V.position[1][1];
         }
     };
+
     Node *root;
     std::unordered_set<Node, myHash> graph;
     Node goal;
@@ -31,12 +33,12 @@ class BFS_solver {
 public:
     BFS_solver(std::vector<std::vector<int> > init);
 
+    std::vector<Node*> BFS();
+
     Node* moveUp(Node *current);
     Node* moveRight(Node *current);
     Node* moveDown(Node *current);
     Node* moveLeft(Node *current);
-
-    std::vector<Node*> BFS();
 };
 
 #endif //NPUZZLES_BFS_SOLVER
