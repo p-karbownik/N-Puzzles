@@ -11,23 +11,49 @@
 class A_star_solver
 {
 private:
-    struct Node
+    class Node
     {
+    public:
         std::vector<std::vector<int>> n_puzzle_array;
         bool isVisited;
         int f_value;
         int g_value;
         int h_value;
+
+        int blank_field_row;
+        int blank_field_column;
+
+        Node();
+        Node(std::vector<std::vector<int>> n_puzzle_array);
+        Node(const Node &node);
+        Node(int dimension);
+
+        bool operator<(const Node& node) const;
+        bool operator>(const Node& node) const;
+        bool operator==(const Node& node) const;
+
+        Node* getNeighbour(int direction);
     };
 
     Node* root;
+    Node* goal;
+
     int calculateManhattanDistanceValue(Node* node);
     int calculateLinearConflictsValue(Node* node);
     int calculateHValue(Node* node);
     int dimension;
+    std::vector<Node*> pathToGoal;
+    bool checkNodeInVector(Node* node, std::vector<Node*> &vector);
+
 public:
-    A_star_solver(std::vector<std::vector<int>> root_array);
-    void solve();
+    A_star_solver(std::vector<std::vector<int>> root_array)
+    {
+        root = new Node(root_array);
+        dimension = root_array.size();
+        goal = new Node(dimension);
+    };
+    bool solve();
+    void printSolution();
 };
 
 
