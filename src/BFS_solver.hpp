@@ -39,7 +39,7 @@ class BFS_solver {
 public:
     BFS_solver(std::vector<std::vector<int> > init);
 
-    std::vector<Node*> BFS();
+    std::vector<Node> BFS();
 
     Node* moveUp(Node *current);
     Node* moveRight(Node *current);

@@ -25,20 +25,20 @@ BFS_solver::BFS_solver(vector<vector<int> > init) {
     goal.x_empty = puzzleSize - 1;
 }
 
-vector<BFS_solver::Node*> BFS_solver::BFS(){
+vector<BFS_solver::Node> BFS_solver::BFS(){
     queue<Node*> toCheck;
     toCheck.push(root);
     while(!toCheck.empty()) {
         Node* current = toCheck.front();
         toCheck.pop();
         if(*current == goal) {
-            vector<Node*> path;
-            path.push_back(current);
+            vector<Node> path;
+            path.push_back(*current);
             while(current->parent != nullptr) {
                 cout << "(" << current->y_empty << ", " << current->x_empty << ") ";
                 cout << ((current->lastMove == Direction::Up) ? "UP" : ((current->lastMove == Direction::Right) ? "RIGHT" : ((current->lastMove == Direction::Down) ? "DOWN" : "LEFT"))) << endl;
                 current = current->parent;
-                path.push_back(current);
+                path.push_back(*current);
             }
             return path;
         }
