@@ -28,6 +28,7 @@ class BFS_solver {
     std::unordered_set<Node, node_hash> graph;
     Node goal;
     int puzzleSize;
+    std::vector<Node*> solution;
 
     bool is_solvable(std::vector<std::vector<int> > &V);
 
@@ -38,7 +39,8 @@ class BFS_solver {
 public:
     BFS_solver(std::vector<std::vector<int> > init);
 
-    std::vector<Node> solve();
+    bool solve();
+    void print_solution();
 };
 
 #endif //NPUZZLES_BFS_SOLVER

@@ -25,25 +25,20 @@ BFS_solver::BFS_solver(vector<vector<int> > init) {
     goal.x_blank = puzzleSize - 1;
 }
 
-vector<BFS_solver::Node> BFS_solver::solve(){
-    vector<Node> path;
-    if (!is_solvable(root->grid)) return path;
+bool BFS_solver::solve(){
+    if (!is_solvable(root->grid)) return false;
     queue<Node*> toCheck;
     toCheck.push(root);
     while(!toCheck.empty()) {
         Node* current = toCheck.front();
         toCheck.pop();
         if(*current == goal) {
-            path.push_back(*current);
+            solution.push_back(current);
             while(current->parent != nullptr) {
-                cout << "(" << current->y_blank << ", " << current->x_blank << ") ";
-                cout << ((current->last_move == Direction::Up) ? "UP" : 
-                ((current->last_move == Direction::Right) ? "RIGHT" : 
-                ((current->last_move == Direction::Down) ? "DOWN" : "LEFT"))) << endl;
                 current = current->parent;
-                path.push_back(*current);
+                solution.push_back(current);
             }
-            return path;
+            return true;
         }
         if (current->y_blank < puzzleSize - 1) {
             Node *next_up = move_up(current);
@@ -75,6 +70,19 @@ vector<BFS_solver::Node> BFS_solver::solve(){
         }
     }
 }
+
+
+void BFS_solver::print_solution() {
+    int size = solution.size();
+    for (int i = size - 2; i >= 0; i--) {
+        cout << size - i - 1 << ": ";
+        cout << "(" << solution[i]->y_blank << ", " << solution[i]->x_blank << ") ";
+        cout << ((solution[i]->last_move == Direction::Up) ? "UP" : 
+            ((solution[i]->last_move == Direction::Right) ? "RIGHT" : 
+            ((solution[i]->last_move == Direction::Down) ? "DOWN" : "LEFT"))) << endl;
+    }
+}
+
 BFS_solver::Node* BFS_solver::move_up(Node *current) {
     return new Node(current, current->x_blank, current->y_blank + 1, Direction::Up);
 }
@@ -157,6 +165,5 @@ bool BFS_solver::is_solvable(std::vector<std::vector<int> > &V) {
     }
     bool inversions_odd = inversions & 1;
 
-    bool result = ((grid_length_odd) && !inversions_odd) || (!grid_length_odd && (blank_on_odd == !inversions_odd));
     return ((grid_length_odd) && !inversions_odd) || (!grid_length_odd && (blank_on_odd == !inversions_odd));
 }
