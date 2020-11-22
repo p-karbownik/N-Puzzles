@@ -29,15 +29,16 @@ class BFS_solver {
     Node goal;
     int puzzleSize;
 
+    bool is_solvable(std::vector<std::vector<int> > &V);
+
+    Node* move_up(Node *current);
+    Node* move_right(Node *current);
+    Node* move_down(Node *current);
+    Node* move_left(Node *current);
 public:
     BFS_solver(std::vector<std::vector<int> > init);
 
     std::vector<Node> solve();
-
-    Node* moveUp(Node *current);
-    Node* moveRight(Node *current);
-    Node* moveDown(Node *current);
-    Node* moveLeft(Node *current);
 };
 
 #endif //NPUZZLES_BFS_SOLVER
