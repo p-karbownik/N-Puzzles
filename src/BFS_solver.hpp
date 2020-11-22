@@ -3,6 +3,7 @@
 
 #include<vector>
 #include<unordered_set>
+#include <boost/functional/hash.hpp>
 
 
 class BFS_solver {
@@ -19,9 +20,14 @@ class BFS_solver {
         Node(Node *prev, int x, int y, Direction lm);
         bool operator==(const Node &that) const;
     };
-    struct myHash {         //TODO: add a proper hash function
-        std::size_t operator()(const Node &V) const {
-            return V.position[1][1];
+    struct myHash {
+        std::size_t operator()(const Node &N) const {
+            boost::hash<std::vector<int> > vectorHash;
+            std::vector<int> rowHashes;
+            for (int i = 0; i < N.position.size(); i++) {
+                rowHashes.push_back(vectorHash(N.position[i]));
+            }
+            return vectorHash(rowHashes);
         }
     };
 
