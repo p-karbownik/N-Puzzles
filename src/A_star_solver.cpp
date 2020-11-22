@@ -1,7 +1,3 @@
-//
-// Created by patryk on 10.11.2020.
-//
-
 #include <set>
 #include <queue>
 #include <utility>
@@ -76,7 +72,6 @@ A_star_solver::Node::Node(int dimension)
     this->blank_field_row = dimension - 1;
 }
 
-
 bool A_star_solver::Node::operator<(const Node &node) const
 {
     return this->f_value < node.f_value;
@@ -147,7 +142,7 @@ A_star_solver::Node* A_star_solver::Node::getNeighbour(int direction)
 
 int A_star_solver::calculateHValue(Node *node)
 {
-    return calculateManhattanDistanceValue(node) + 2 * calculateLinearConflictsValue(node);
+    return calculateManhattanDistanceValue(node);// + 2 * calculateLinearConflictsValue(node);
 }
 
 int A_star_solver::calculateManhattanDistanceValue(Node *node)
@@ -218,35 +213,44 @@ int A_star_solver::calculateLinearConflictsValue(Node *node)
     return linearConflictsValue;
 }
 
-bool A_star_solver::checkNodeInVector(Node *node, std::vector<Node *> &vector)
+A_star_solver::Node* A_star_solver::getFromOpenSet(Node *node, std::set<std::pair<int, Node *>> set)
 {
-    for(auto & i : vector)
+    for(std::set<std::pair<int, Node*>>::iterator iter = set.begin(); iter != set.end(); iter++)
     {
-        if(node->n_puzzle_array == i->n_puzzle_array)
-            return true;
+        if(iter->second->n_puzzle_array == node->n_puzzle_array)
+            return iter->second;
     }
-
-    return false;
+    return nullptr;
 }
 
 bool A_star_solver::solve()
 {
     std::vector<Node*> chosenNodes; // zbior wierzcholkow przejrzanych
-    std::priority_queue<std::pair<int, Node*>, std::vector<std::pair<int,Node*>>, std::greater<std::pair<int, Node*>>> openList; //zbior wierzcholkow nieodwiedzonych, sasiadujacych z odwiedzonymi
+    std::set<std::pair<int, Node*>> openList; //zbior wierzcholkow nieodwiedzonych, sasiadujacych z odwiedzonymi
+    std::vector<Node*> closedSet;
 
-    chosenNodes.push_back(root);
-    Node* x = root;
-    int actual_g = 0;
+    root->h_value = calculateHValue(root);
+    root->g_value = 0;
+    root->f_value = root->h_value + root->g_value;
 
-    while(x != nullptr)
+    openList.insert(std::make_pair(root->f_value, root));
+    bool result = false;
+
+    while(!openList.empty())
     {
-        actual_g++;
+        Node* x = openList.begin()->second;
+
         if(x->n_puzzle_array == goal->n_puzzle_array)
         {
-            // obsluga znalezienia wyniku
-            pathToGoal = chosenNodes;
-            return true;
+            openList.erase(openList.begin());
+            reconstructPath(x);
+            result = true;
+            std::cout << "Tutaj jestem";
+            break;
         }
+
+        openList.erase(openList.begin());
+        closedSet.push_back(x);
 
         for(int i = 0; i < 4; i++)
         {
@@ -257,44 +261,59 @@ bool A_star_solver::solve()
                 continue;
             }
 
-            if(checkNodeInVector(y, chosenNodes))
+            if(getFromOpenSet(y, openList))
             {
                 delete y;
-
                 continue;
             }
 
-            y->h_value = calculateHValue(y);
-            y->g_value = actual_g;
-            y->f_value = y->g_value + y->h_value;
+            int temp_g = x->g_value + 1;
 
-            /*sprawdz, czy element o tym priorytecie jest juz w kolejce*/
-            /*jesli jest to delete & continue */
-            /*jesli nie ma to dodaj */
-            openList.push(std::make_pair(y->f_value, y));
+            Node* y_fromOpenList = getFromOpenSet(y, openList);
+            bool tentative_is_better = false;
 
+            if(y_fromOpenList == nullptr)
+            {
+                y->h_value = calculateHValue(y);
+                y->g_value = temp_g;
+                y->f_value = y->h_value + y->g_value;
+                openList.insert(std::make_pair(y->f_value, y));
+                tentative_is_better = true;
+            }
+
+            else if(temp_g < y_fromOpenList->g_value)
+            {
+                delete y;
+                y = y_fromOpenList;
+                tentative_is_better = true;
+            }
+
+            if (tentative_is_better)
+            {
+                y->parent = x;
+                y->g_value = temp_g;
+                y->f_value = y->g_value + y->h_value;
+            }
         }
-
-        if(openList.empty())
-        {
-            break;
-        }
-
-        x = openList.top().second;
-        openList.pop();
-
-        chosenNodes.push_back(x);
-
-        for(int i = 0; i < openList.size(); i++)
-        {
-            delete openList.top().second;
-            openList.pop();
-        }
-        pathToGoal = chosenNodes;
-
     }
 
-    return false;
+    while (!openList.empty())
+    {
+        delete openList.begin()->second;
+        openList.erase(openList.begin());
+    }
+
+    return result;
+}
+
+void A_star_solver::reconstructPath(Node *node)
+{
+    if(node->parent != nullptr)
+    {
+        reconstructPath(node->parent);
+    }
+    node->isVisited = true;
+    pathToGoal.push_back(node);
 }
 
 void A_star_solver::printSolution()

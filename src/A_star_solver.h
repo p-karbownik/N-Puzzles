@@ -22,6 +22,7 @@ private:
 
         int blank_field_row;
         int blank_field_column;
+        Node* parent;
 
         Node();
         Node(std::vector<std::vector<int>> n_puzzle_array);
@@ -43,7 +44,8 @@ private:
     int calculateHValue(Node* node);
     int dimension;
     std::vector<Node*> pathToGoal;
-    bool checkNodeInVector(Node* node, std::vector<Node*> &vector);
+    Node* getFromOpenSet(Node* node, std::set<std::pair<int, Node*>>);
+    void reconstructPath(Node* end);
 
 public:
     A_star_solver(std::vector<std::vector<int>> root_array)
