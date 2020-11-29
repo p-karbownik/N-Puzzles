@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <queue>
 #include <set>
 #include "A_star_solver.h"
 
@@ -9,13 +8,16 @@ int main()
 {
     std::vector<std::vector<int>> board =
             {
-                    {5, 3, 8, 13},
-                    {9, 2, 4, 0},
-                    {14, 7, 12, 6},
-                    {10, 15, 11, 1}
+                    {5, 9, 3, 4},
+                    {6, 10, 14, 8},
+                    {0, 13, 2, 15},
+                    {11, 7, 12, 1}
             };
     auto solver = new A_star_solver(board);
+    clock_t start = clock();
     std::cout << solver->solve() << std::endl;
+    std::cout << "czas wykonania " << ( clock() - start ) / CLOCKS_PER_SEC<< std::endl;
     solver->printSolution();
+    //std::cout << 5861044965 / CLOCKS_PER_SEC;
     return 0;
 }

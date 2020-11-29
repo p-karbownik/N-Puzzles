@@ -56,6 +56,7 @@ public:
     };
     bool solve();
     void printSolution();
+    bool isInCloseList(Node* node, std::vector<Node*> &closedSet);
 };
 
 

@@ -142,7 +142,7 @@ A_star_solver::Node* A_star_solver::Node::getNeighbour(int direction)
 
 int A_star_solver::calculateHValue(Node *node)
 {
-    return calculateManhattanDistanceValue(node);// + 2 * calculateLinearConflictsValue(node);
+    return calculateManhattanDistanceValue(node) + 2 * calculateLinearConflictsValue(node);
 }
 
 int A_star_solver::calculateManhattanDistanceValue(Node *node)
@@ -176,46 +176,72 @@ int A_star_solver::calculateLinearConflictsValue(Node *node)
 {
     int linearConflictsValue = 0;
     int expectedValue = 0;
-    int expectedColumn, expectedRow;
-    for(int i = 0; i < dimension; i++)
+    int expectedValue_j, expectedValue_k;
+
+    for (int i = 0; i < dimension; i++)
+    {
         for(int j = 0; j < dimension; j++)
-        {
-            expectedValue++;
-            expectedColumn = (node->n_puzzle_array[i][j] - 1) % dimension;
-            expectedRow = (node->n_puzzle_array[i][j] - 1) / dimension;
-
-            bool isPossibilityOfLinearConflict = ((abs(expectedColumn - j) == 1) && expectedRow == i) || (abs((expectedRow - 1) - i) == 1 && expectedColumn == j);
-
-            if(node->n_puzzle_array[i][j] == expectedValue || node->n_puzzle_array[i][j] == 0 || !isPossibilityOfLinearConflict)
-                continue;
-            else
+            for(int k = j + 1; k < dimension; k++)
             {
-                if((j + 1) != dimension && node->n_puzzle_array[i][j + 1] != 0)
-                {
-                    if(node->n_puzzle_array[i][j] - node->n_puzzle_array[i][j] == 1)
-                    {
-                        linearConflictsValue++;
-                        expectedValue++;
-                        j++;
+                if(node->n_puzzle_array[i][j] == 0 || node->n_puzzle_array[i][k] == 0)
+                    continue;
 
-                        continue;
-                    }
-                }
+                expectedValue_j = (node->n_puzzle_array[i][j] - 1) / dimension;
+                expectedValue_k = (node->n_puzzle_array[i][k] - 1) / dimension;
 
-                if((i + 1) != dimension && node->n_puzzle_array[i + 1][j] != 0)
-                {
-                    if(node->n_puzzle_array[i][j] - node->n_puzzle_array[i + 1][j] ==  dimension)
-                        linearConflictsValue++;
-                }
+                if(expectedValue_j != i || i != expectedValue_k)
+                    continue;
+
+                if(expectedValue_k != expectedValue_j)
+                    continue;
+
+                expectedValue_j = (node->n_puzzle_array[i][j] - 1) % dimension;
+                expectedValue_k = (node->n_puzzle_array[i][k] - 1) % dimension;
+
+                if(expectedValue_k < expectedValue_j)
+                    linearConflictsValue++;
             }
-        }
+    }
+
+    for (int i = 0; i < dimension; i++)
+        for (int j = 0; j < dimension; j++)
+            for(int k = j + 1; k < dimension; k++)
+            {
+                if(node->n_puzzle_array[i][j] == 0 || node->n_puzzle_array[i][k] == 0)
+                    continue;
+
+                expectedValue_j = (node->n_puzzle_array[i][j] - 1) % dimension;
+                expectedValue_k = (node->n_puzzle_array[i][k] - 1) % dimension;
+
+
+                if(expectedValue_j != i || i != expectedValue_k)
+                    continue;
+
+                if(expectedValue_k != expectedValue_j)
+                    continue;
+
+                expectedValue_j = (node->n_puzzle_array[i][j] - 1) / dimension;
+                expectedValue_k = (node->n_puzzle_array[i][k] - 1) / dimension;
+
+                if(expectedValue_k < expectedValue_j)
+                    linearConflictsValue++;
+            }
 
     return linearConflictsValue;
 }
 
+bool A_star_solver::isInCloseList(Node* node, std::vector<Node*> &closedSet)
+{
+    for(int i = 0; i < closedSet.size(); i++)
+    {
+        if(closedSet.at(i)->n_puzzle_array == node->n_puzzle_array)
+            return true;
+    }
+    return false;
+}
 A_star_solver::Node* A_star_solver::getFromOpenSet(Node *node, std::set<std::pair<int, Node *>> set)
 {
-    for(std::set<std::pair<int, Node*>>::iterator iter = set.begin(); iter != set.end(); iter++)
+    for(auto iter = set.begin(); iter != set.end(); iter++)
     {
         if(iter->second->n_puzzle_array == node->n_puzzle_array)
             return iter->second;
@@ -225,9 +251,8 @@ A_star_solver::Node* A_star_solver::getFromOpenSet(Node *node, std::set<std::pai
 
 bool A_star_solver::solve()
 {
-    std::vector<Node*> chosenNodes; // zbior wierzcholkow przejrzanych
     std::set<std::pair<int, Node*>> openList; //zbior wierzcholkow nieodwiedzonych, sasiadujacych z odwiedzonymi
-    std::vector<Node*> closedSet;
+    std::vector<Node*> closedSet; //zbior wierzcholkow przejrzanych
 
     root->h_value = calculateHValue(root);
     root->g_value = 0;
@@ -245,7 +270,6 @@ bool A_star_solver::solve()
             openList.erase(openList.begin());
             reconstructPath(x);
             result = true;
-            std::cout << "Tutaj jestem";
             break;
         }
 
@@ -261,7 +285,7 @@ bool A_star_solver::solve()
                 continue;
             }
 
-            if(getFromOpenSet(y, openList))
+            if(isInCloseList(y, closedSet))
             {
                 delete y;
                 continue;
