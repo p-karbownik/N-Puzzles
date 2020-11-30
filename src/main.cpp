@@ -1,6 +1,7 @@
 #include <iostream>
 #include<vector>
 #include <set>
+
 #include"BFS_solver.hpp"
 #include "A_star_solver.h"
 
@@ -16,7 +17,7 @@ int main()
         { 7, 8, 6}
     };
     BFS_solver solver1 = BFS_solver(testV);
-    solver1.BFS();
+    solver1.solve();
   
     std::vector<std::vector<int>> board =
             {

@@ -11,6 +11,7 @@ BFS_solver::BFS_solver(vector<vector<int> > init) {
     root = new Node(init);
     graph.insert(*root);
     puzzleSize = init.size();
+    blank_value = -1;
 
     goal = vector<vector<int> > (puzzleSize, vector<int> (puzzleSize));
     int c = 1;
@@ -20,7 +21,7 @@ BFS_solver::BFS_solver(vector<vector<int> > init) {
             c++;
         }
     }
-    goal.grid[puzzleSize - 1][puzzleSize - 1] = -1;
+    goal.grid[puzzleSize - 1][puzzleSize - 1] = blank_value;
     goal.y_blank = puzzleSize - 1;
     goal.x_blank = puzzleSize - 1;
 }
@@ -103,7 +104,7 @@ BFS_solver::Node::Node(Node *prev, int x, int y, Direction lm) {
     grid = prev->grid;
     int tile = grid[y_blank][x_blank];
     grid[prev->y_blank][prev->x_blank] = tile;
-    grid[y_blank][x_blank] = -1;
+    grid[y_blank][x_blank] = blank_value;
     last_move = lm;
 }
 BFS_solver::Node::Node(vector<vector<int> > pos) {
@@ -112,7 +113,7 @@ BFS_solver::Node::Node(vector<vector<int> > pos) {
     last_move = Direction::None;
     for (int i = 0; i < pos.size(); i++) {
         for (int j = 0; j < pos.size(); j++) {
-            if (grid[i][j] == -1) {
+            if (grid[i][j] == blank_value) {
                 y_blank = i;
                 x_blank = j;
             }
@@ -148,7 +149,7 @@ bool BFS_solver::is_solvable(std::vector<std::vector<int> > &V) {
     for (int i = 0; i < row_length; i++) {
         for (int j = 0; j < row_length; j++) {
             linear.push_back(V[i][j]);
-            if (V[i][j] == -1) {
+            if (V[i][j] == blank_value) {
                 blank_row = row_length - i;
             }
         }
@@ -157,9 +158,9 @@ bool BFS_solver::is_solvable(std::vector<std::vector<int> > &V) {
 
     int inversions = 0;
     for (int i = 0; i < grid_length - 1; i++) {
-        if (linear[i] == -1) continue;
+        if (linear[i] == blank_value) continue;
         for (int j = i + 1; j < grid_length; j++) {
-            if (linear[i] > linear[j] && linear[j] != -1) 
+            if (linear[i] > linear[j] && linear[j] != blank_value) 
                 inversions++;
         }
     }
