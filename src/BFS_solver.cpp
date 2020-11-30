@@ -11,7 +11,7 @@ BFS_solver::BFS_solver(vector<vector<int> > init) {
     root = new Node(init);
     graph.insert(*root);
     puzzleSize = init.size();
-    blank_value = -1;
+    // blank_value = -1;
 
     goal = vector<vector<int> > (puzzleSize, vector<int> (puzzleSize));
     int c = 1;
