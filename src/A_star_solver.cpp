@@ -56,7 +56,7 @@ A_star_solver::Node::Node(int dimension)
         {
             if( (i + 1) * (j + 1) == dimension * dimension)
             {
-                row.push_back(0);
+                row.push_back(-1);
             }
             else
                 row.push_back(x++);
@@ -83,7 +83,7 @@ A_star_solver::Node* A_star_solver::Node::getNeighbour(int direction)
             break;
 
             x->n_puzzle_array[x->blank_field_row][x->blank_field_column] = x->n_puzzle_array[x->blank_field_row - 1][x->blank_field_column];
-            x->n_puzzle_array[x->blank_field_row - 1][x->blank_field_column] = 0;
+            x->n_puzzle_array[x->blank_field_row - 1][x->blank_field_column] = -1;
             x->blank_field_row -= 1;
 
             return x;
@@ -93,7 +93,7 @@ A_star_solver::Node* A_star_solver::Node::getNeighbour(int direction)
                 break;
 
             x->n_puzzle_array[x->blank_field_row][x->blank_field_column] = x->n_puzzle_array[x->blank_field_row][x->blank_field_column + 1];
-            x->n_puzzle_array[x->blank_field_row][x->blank_field_column + 1] = 0;
+            x->n_puzzle_array[x->blank_field_row][x->blank_field_column + 1] = -1;
             x->blank_field_column += 1;
 
             return x;
@@ -103,7 +103,7 @@ A_star_solver::Node* A_star_solver::Node::getNeighbour(int direction)
                 return nullptr;
 
             x->n_puzzle_array[x->blank_field_row][x->blank_field_column] = x->n_puzzle_array[x->blank_field_row + 1][x->blank_field_column];
-            x->n_puzzle_array[x->blank_field_row + 1][x->blank_field_column] = 0;
+            x->n_puzzle_array[x->blank_field_row + 1][x->blank_field_column] = -1;
             x->blank_field_row += 1;
 
             return x;
@@ -113,7 +113,7 @@ A_star_solver::Node* A_star_solver::Node::getNeighbour(int direction)
                 return nullptr;
 
             x->n_puzzle_array[x->blank_field_row][x->blank_field_column] = x->n_puzzle_array[x->blank_field_row][x->blank_field_column - 1];
-            x->n_puzzle_array[x->blank_field_row][x->blank_field_column - 1] = 0;
+            x->n_puzzle_array[x->blank_field_row][x->blank_field_column - 1] = -1;
             x->blank_field_column -= 1;
 
             return x;
