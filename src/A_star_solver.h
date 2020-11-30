@@ -28,11 +28,6 @@ private:
         Node(std::vector<std::vector<int>> n_puzzle_array);
         Node(const Node &node);
         Node(int dimension);
-
-        bool operator<(const Node& node) const;
-        bool operator>(const Node& node) const;
-        bool operator==(const Node& node) const;
-
         Node* getNeighbour(int direction);
     };
 
