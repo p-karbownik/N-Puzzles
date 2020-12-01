@@ -8,20 +8,52 @@
 
 using namespace std;
 
-int main()
+int main(int argc, char** argv)
 {
 
-    Pattern_generator generator;
-    vector<vector<int> > testV;
-    generator.generate(testV, 24);
+    if(argc == 4)
+    {
+        /* parametry: dimension, solver, displayPath */
+        int dimension = atoi(argv[1]);
+        Pattern_generator generator;
+        vector<vector<int> > testV;
+        generator.generate(testV, dimension * dimension - 1);
 
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            cout << testV[i][j] << " ";
+        std::cout << "Wyegenerowany przypadek" << std::endl;
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                cout << testV[i][j] << " ";
+            }
+            cout << endl;
         }
-        cout << endl;
-    }
 
+        bool displayPath = atoi(argv[3]) == 1;
+        int whichSolver = atoi(argv[2]); /* 0 - BFS, 1 - A*, 2 - both */
+
+        if(whichSolver == 0 || whichSolver == 2)
+        {
+            std::cout << "Szukanie rozwiazania przy uzyciu BFS" << std::endl;
+            BFS_solver solver1 = BFS_solver(testV);
+            solver1.solve();
+            /* drukowanie statystyki*/
+
+            if(displayPath)
+            {  }// wyswietl Path}
+        }
+
+        if(whichSolver == 1 || whichSolver == 2)
+        {
+
+            auto solver2 = new A_star_solver(testV);
+            solver2->solve();
+            /*drukowanie statystyki */
+            if(displayPath)
+            {
+                solver2->printSolution();
+            }
+            delete solver2;
+        }
+    }
     // std::cout << "Hello, World!!!" << std::endl;
 
     // vector<vector<int> > testV = {
