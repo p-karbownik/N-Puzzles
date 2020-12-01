@@ -31,7 +31,7 @@ class BFS_solver {
     const static int blank_value = -1;
     std::vector<Node*> solution;
 
-    bool is_solvable(std::vector<std::vector<int> > &V);
+    // bool is_solvable(std::vector<std::vector<int> > &V);
 
     Node* move_up(Node *current);
     Node* move_right(Node *current);

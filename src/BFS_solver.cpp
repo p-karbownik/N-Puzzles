@@ -4,6 +4,7 @@
 #include<queue>
 
 #include"BFS_solver.hpp"
+#include"Solvability_verifier.hpp"
 
 using namespace std;
 
@@ -14,20 +15,25 @@ BFS_solver::BFS_solver(vector<vector<int> > init) {
     // blank_value = -1;
 
     goal = vector<vector<int> > (puzzleSize, vector<int> (puzzleSize));
-    int c = 1;
-    for (int i = 0; i < puzzleSize; i++) {
-        for (int j = 0; j < puzzleSize; j++) {
-            goal.grid[i][j] = c;
-            c++;
+
+    if (puzzleSize != 0) {
+        int c = 1;
+        for (int i = 0; i < puzzleSize; i++) {
+            for (int j = 0; j < puzzleSize; j++) {
+                goal.grid[i][j] = c;
+                c++;
+            }
         }
+        goal.grid[puzzleSize - 1][puzzleSize - 1] = blank_value;
+        goal.y_blank = puzzleSize - 1;
+        goal.x_blank = puzzleSize - 1;
     }
-    goal.grid[puzzleSize - 1][puzzleSize - 1] = blank_value;
-    goal.y_blank = puzzleSize - 1;
-    goal.x_blank = puzzleSize - 1;
 }
 
 bool BFS_solver::solve(){
-    if (!is_solvable(root->grid)) return false;
+    Solvability_verifier verifier;
+    if (!verifier.solvable(root->grid, blank_value)) return false;
+
     queue<Node*> toCheck;
     toCheck.push(root);
     while(!toCheck.empty()) {
@@ -139,32 +145,32 @@ std::size_t BFS_solver::node_hash::operator()(const Node &N) const {
 }
 
 
-bool BFS_solver::is_solvable(std::vector<std::vector<int> > &V) {
-    int row_length = V.size();
-    int grid_length = row_length * row_length;
-    bool grid_length_odd = grid_length & 1;
+// bool BFS_solver::is_solvable(std::vector<std::vector<int> > &V) {
+//     int row_length = V.size();
+//     int grid_length = row_length * row_length;
+//     bool grid_length_odd = grid_length & 1;
 
-    int blank_row;             //from bottom
-    vector<int> linear;
-    for (int i = 0; i < row_length; i++) {
-        for (int j = 0; j < row_length; j++) {
-            linear.push_back(V[i][j]);
-            if (V[i][j] == blank_value) {
-                blank_row = row_length - i;
-            }
-        }
-    }
-    bool blank_on_odd = blank_row & 1;
+//     int blank_row;             //from bottom
+//     vector<int> linear;
+//     for (int i = 0; i < row_length; i++) {
+//         for (int j = 0; j < row_length; j++) {
+//             linear.push_back(V[i][j]);
+//             if (V[i][j] == blank_value) {
+//                 blank_row = row_length - i;
+//             }
+//         }
+//     }
+//     bool blank_on_odd = blank_row & 1;
 
-    int inversions = 0;
-    for (int i = 0; i < grid_length - 1; i++) {
-        if (linear[i] == blank_value) continue;
-        for (int j = i + 1; j < grid_length; j++) {
-            if (linear[i] > linear[j] && linear[j] != blank_value) 
-                inversions++;
-        }
-    }
-    bool inversions_odd = inversions & 1;
+//     int inversions = 0;
+//     for (int i = 0; i < grid_length - 1; i++) {
+//         if (linear[i] == blank_value) continue;
+//         for (int j = i + 1; j < grid_length; j++) {
+//             if (linear[i] > linear[j] && linear[j] != blank_value) 
+//                 inversions++;
+//         }
+//     }
+//     bool inversions_odd = inversions & 1;
 
-    return ((grid_length_odd) && !inversions_odd) || (!grid_length_odd && (blank_on_odd == !inversions_odd));
-}
+//     return ((grid_length_odd) && !inversions_odd) || (!grid_length_odd && (blank_on_odd == !inversions_odd));
+// }
