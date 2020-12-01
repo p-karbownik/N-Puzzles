@@ -7,17 +7,15 @@
 
 
 class BFS_solver {
-    enum class Direction {Up, Right, Down, Left, None};
 
     struct Node {
         Node *parent;
         int y_blank, x_blank;
         std::vector<std::vector<int> > grid;
-        Direction last_move;
 
         Node() {}
         Node(std::vector<std::vector<int> > pos);
-        Node(Node *prev, int x, int y, Direction lm);
+        Node(Node *prev, int x, int y);
         bool operator==(const Node &that) const;
     };
     struct node_hash {
@@ -31,8 +29,6 @@ class BFS_solver {
     const static int blank_value = -1;
     std::vector<Node*> solution;
 
-    bool is_solvable(std::vector<std::vector<int> > &V);
-
     Node* move_up(Node *current);
     Node* move_right(Node *current);
     Node* move_down(Node *current);
@@ -41,7 +37,7 @@ public:
     BFS_solver(std::vector<std::vector<int> > init);
 
     bool solve();
-    void print_solution();
+    std::vector<std::vector<std::vector<int> > > get_solution();
 };
 
 #endif //NPUZZLES_BFS_SOLVER

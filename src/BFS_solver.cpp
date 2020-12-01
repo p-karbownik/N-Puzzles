@@ -4,6 +4,7 @@
 #include<queue>
 
 #include"BFS_solver.hpp"
+#include"Solvability_verifier.hpp"
 
 using namespace std;
 
@@ -11,28 +12,32 @@ BFS_solver::BFS_solver(vector<vector<int> > init) {
     root = new Node(init);
     graph.insert(*root);
     puzzleSize = init.size();
-    // blank_value = -1;
 
+    if (puzzleSize != 0) {
     goal = vector<vector<int> > (puzzleSize, vector<int> (puzzleSize));
-    int c = 1;
-    for (int i = 0; i < puzzleSize; i++) {
-        for (int j = 0; j < puzzleSize; j++) {
-            goal.grid[i][j] = c;
-            c++;
+        int c = 1;
+        for (int i = 0; i < puzzleSize; i++) {
+            for (int j = 0; j < puzzleSize; j++) {
+                goal.grid[i][j] = c;
+                c++;
+            }
         }
+        goal.grid[puzzleSize - 1][puzzleSize - 1] = blank_value;
+        goal.y_blank = puzzleSize - 1;
+        goal.x_blank = puzzleSize - 1;
     }
-    goal.grid[puzzleSize - 1][puzzleSize - 1] = blank_value;
-    goal.y_blank = puzzleSize - 1;
-    goal.x_blank = puzzleSize - 1;
 }
 
 bool BFS_solver::solve(){
-    if (!is_solvable(root->grid)) return false;
+    Solvability_verifier verifier;
+    if (!verifier.solvable(root->grid, blank_value)) return false;
+
     queue<Node*> toCheck;
     toCheck.push(root);
     while(!toCheck.empty()) {
         Node* current = toCheck.front();
         toCheck.pop();
+
         if(*current == goal) {
             solution.push_back(current);
             while(current->parent != nullptr) {
@@ -72,32 +77,27 @@ bool BFS_solver::solve(){
     }
 }
 
-
-void BFS_solver::print_solution() {
-    int size = solution.size();
-    for (int i = size - 2; i >= 0; i--) {
-        cout << size - i - 1 << ": ";
-        cout << "(" << solution[i]->y_blank << ", " << solution[i]->x_blank << ") ";
-        cout << ((solution[i]->last_move == Direction::Up) ? "UP" : 
-            ((solution[i]->last_move == Direction::Right) ? "RIGHT" : 
-            ((solution[i]->last_move == Direction::Down) ? "DOWN" : "LEFT"))) << endl;
+vector<vector<vector<int> > > BFS_solver::get_solution() {
+    vector<vector<vector<int> > > result;
+    for (int i = solution.size() - 1; i >= 0; i--) {
+        result.push_back(solution[i]->grid);
     }
 }
 
 BFS_solver::Node* BFS_solver::move_up(Node *current) {
-    return new Node(current, current->x_blank, current->y_blank + 1, Direction::Up);
+    return new Node(current, current->x_blank, current->y_blank + 1);
 }
 BFS_solver::Node* BFS_solver::move_right(Node *current) {
-    return new Node(current, current->x_blank - 1, current->y_blank, Direction::Right);
+    return new Node(current, current->x_blank - 1, current->y_blank);
 }
 BFS_solver::Node* BFS_solver::move_down(Node *current) {
-    return new Node(current, current->x_blank, current->y_blank - 1, Direction::Down);
+    return new Node(current, current->x_blank, current->y_blank - 1);
 }
 BFS_solver::Node* BFS_solver::move_left(Node *current) {
-    return new Node(current, current->x_blank + 1, current->y_blank, Direction::Left);
+    return new Node(current, current->x_blank + 1, current->y_blank);
 }
 
-BFS_solver::Node::Node(Node *prev, int x, int y, Direction lm) {
+BFS_solver::Node::Node(Node *prev, int x, int y) {
     parent = prev;
     y_blank = y;
     x_blank = x;
@@ -105,12 +105,11 @@ BFS_solver::Node::Node(Node *prev, int x, int y, Direction lm) {
     int tile = grid[y_blank][x_blank];
     grid[prev->y_blank][prev->x_blank] = tile;
     grid[y_blank][x_blank] = blank_value;
-    last_move = lm;
 }
+
 BFS_solver::Node::Node(vector<vector<int> > pos) {
     parent = nullptr;
     grid = pos;
-    last_move = Direction::None;
     for (int i = 0; i < pos.size(); i++) {
         for (int j = 0; j < pos.size(); j++) {
             if (grid[i][j] == blank_value) {
@@ -120,6 +119,7 @@ BFS_solver::Node::Node(vector<vector<int> > pos) {
         }
     }
 }
+
 bool BFS_solver::Node::operator==(const Node &that) const {
     for (int i = 0; i < this->grid.size() && i < that.grid.size(); i++) {
         for (int j = 0; j < this->grid[i].size() && j < that.grid[i].size(); j++) {
@@ -136,35 +136,4 @@ std::size_t BFS_solver::node_hash::operator()(const Node &N) const {
         row_hashes.push_back(vector_hash(N.grid[i]));
     }
     return vector_hash(row_hashes);
-}
-
-
-bool BFS_solver::is_solvable(std::vector<std::vector<int> > &V) {
-    int row_length = V.size();
-    int grid_length = row_length * row_length;
-    bool grid_length_odd = grid_length & 1;
-
-    int blank_row;             //from bottom
-    vector<int> linear;
-    for (int i = 0; i < row_length; i++) {
-        for (int j = 0; j < row_length; j++) {
-            linear.push_back(V[i][j]);
-            if (V[i][j] == blank_value) {
-                blank_row = row_length - i;
-            }
-        }
-    }
-    bool blank_on_odd = blank_row & 1;
-
-    int inversions = 0;
-    for (int i = 0; i < grid_length - 1; i++) {
-        if (linear[i] == blank_value) continue;
-        for (int j = i + 1; j < grid_length; j++) {
-            if (linear[i] > linear[j] && linear[j] != blank_value) 
-                inversions++;
-        }
-    }
-    bool inversions_odd = inversions & 1;
-
-    return ((grid_length_odd) && !inversions_odd) || (!grid_length_odd && (blank_on_odd == !inversions_odd));
 }
