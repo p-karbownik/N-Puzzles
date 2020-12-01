@@ -1,4 +1,4 @@
-// #include<vector>
+
 #include<random>
 #include<algorithm>
 
@@ -7,14 +7,18 @@
 
 using namespace std;
 
-void Pattern_generator::generate(vector<vector<int> > &grid, int N) {
+bool Pattern_generator::generate(vector<vector<int> > &grid, int N) {
+    if (N <= 0) return false;
     int blank_value = -1;
     Solvability_verifier verifier;
+
     int width = sqrt(N + 1);
+    if (width ^2 - 1 != N) return false;
     do {
         grid.clear();
         shuffle(grid, N, width);
     } while (!verifier.solvable(grid, blank_value));
+    return true;
 }
 
 void Pattern_generator::shuffle(std::vector<std::vector<int> > &grid, int N, int width) {
