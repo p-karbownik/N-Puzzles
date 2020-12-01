@@ -2,9 +2,7 @@
 #define NPUZZLES_BFS_SOLVER
 
 #include<vector>
-#include<queue>
 #include<unordered_set>
-#include<boost/functional/hash.hpp>
 
 
 class BFS_solver {
@@ -18,22 +16,23 @@ class BFS_solver {
         Node() {}
         Node(std::vector<std::vector<int> > pos);
         Node(Node *prev, int x, int y);
+
         ~Node();
+
         bool operator==(const Node &that) const;
     };
     struct node_hash {
         std::size_t operator()(const Node &N) const;
     };
 
-    Node *root;
-    std::unordered_set<Node, node_hash> graph;
-    std::queue<Node*> toCheck;
-    Node goal;
     int puzzleSize;
     const static int blank_value = -1;
-    std::vector<Node*> solution;
 
-    void clear(std::queue<Node*> &Q);
+    Node *root;
+    std::unordered_set<Node, node_hash> graph;
+
+    Node goal;
+    std::vector<Node*> solution;
 
     Node* move_up(Node *current);
     Node* move_right(Node *current);
