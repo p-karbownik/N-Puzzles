@@ -3,7 +3,6 @@
 
 #include<vector>
 #include<unordered_set>
-#include<boost/functional/hash.hpp>
 
 
 class BFS_solver {
@@ -11,22 +10,28 @@ class BFS_solver {
     struct Node {
         Node *parent;
         int y_blank, x_blank;
+        Node* children[4];
         std::vector<std::vector<int> > grid;
 
         Node() {}
         Node(std::vector<std::vector<int> > pos);
         Node(Node *prev, int x, int y);
+
+        ~Node();
+
         bool operator==(const Node &that) const;
     };
     struct node_hash {
         std::size_t operator()(const Node &N) const;
     };
 
-    Node *root;
-    std::unordered_set<Node, node_hash> graph;
-    Node goal;
     int puzzleSize;
     const static int blank_value = -1;
+
+    Node *root;
+    std::unordered_set<Node, node_hash> graph;
+
+    Node goal;
     std::vector<Node*> solution;
 
     Node* move_up(Node *current);
@@ -35,6 +40,7 @@ class BFS_solver {
     Node* move_left(Node *current);
 public:
     BFS_solver(std::vector<std::vector<int> > init);
+    ~BFS_solver();
 
     bool solve();
     std::vector<std::vector<std::vector<int> > > get_solution();
