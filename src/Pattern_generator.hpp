@@ -7,7 +7,7 @@ class Pattern_generator {
 private:
     void shuffle(std::vector<std::vector<int> > &grid, int N, int width);
 public:
-    void generate(std::vector<std::vector<int> > &grid, int N);
+    bool generate(std::vector<std::vector<int> > &grid, int N);
 };
 
 #endif //NPUZZLES_PATTERN_GENERATOR
