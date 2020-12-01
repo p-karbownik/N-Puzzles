@@ -13,7 +13,9 @@ bool Pattern_generator::generate(vector<vector<int> > &grid, int N) {
     Solvability_verifier verifier;
 
     int width = sqrt(N + 1);
-    if (width ^2 - 1 != N) return false;
+    if (width * width - 1 != N) 
+        return false;
+
     do {
         grid.clear();
         shuffle(grid, N, width);
