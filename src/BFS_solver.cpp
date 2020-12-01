@@ -3,6 +3,8 @@
 #include<unordered_set>
 #include<queue>
 
+#include<boost/functional/hash.hpp>
+
 #include"BFS_solver.hpp"
 #include"Solvability_verifier.hpp"
 
@@ -36,7 +38,7 @@ bool BFS_solver::solve(){
     Solvability_verifier verifier;
     if (!verifier.solvable(root->grid, blank_value)) return false;
 
-    
+    queue<Node*> toCheck;
     toCheck.push(root);
     while(!toCheck.empty()) {
         Node* current = toCheck.front();
@@ -50,6 +52,7 @@ bool BFS_solver::solve(){
             }
             return true;
         }
+
         if (current->y_blank < puzzleSize - 1) {
             Node *next_up = move_up(current);
             if (!graph.count(*next_up)) {
