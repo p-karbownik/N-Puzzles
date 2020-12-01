@@ -83,8 +83,10 @@ A_star_solver::Node* A_star_solver::Node::getNeighbour(int direction)
     {
         case 0: /*UP*/
             if(this->blank_field_row - 1 < 0)
-                break;
-
+            {
+                delete x;
+                return nullptr;
+            }
             x->n_puzzle_array[x->blank_field_row][x->blank_field_column] = x->n_puzzle_array[x->blank_field_row - 1][x->blank_field_column];
             x->n_puzzle_array[x->blank_field_row - 1][x->blank_field_column] = -1;
             x->blank_field_row -= 1;
@@ -93,7 +95,10 @@ A_star_solver::Node* A_star_solver::Node::getNeighbour(int direction)
             break;
         case 1: /*RIGHT*/
             if(this->blank_field_column + 1 >= this->n_puzzle_array.size())
-                break;
+            {
+                delete x;
+                return nullptr;
+            }
 
             x->n_puzzle_array[x->blank_field_row][x->blank_field_column] = x->n_puzzle_array[x->blank_field_row][x->blank_field_column + 1];
             x->n_puzzle_array[x->blank_field_row][x->blank_field_column + 1] = -1;
@@ -103,7 +108,10 @@ A_star_solver::Node* A_star_solver::Node::getNeighbour(int direction)
             break;
         case 2: /*DOWN*/
             if(this->blank_field_row + 1 >= this->n_puzzle_array.size())
-                break;
+            {
+                delete x;
+                return nullptr;
+            }
 
             x->n_puzzle_array[x->blank_field_row][x->blank_field_column] = x->n_puzzle_array[x->blank_field_row + 1][x->blank_field_column];
             x->n_puzzle_array[x->blank_field_row + 1][x->blank_field_column] = -1;
@@ -113,7 +121,10 @@ A_star_solver::Node* A_star_solver::Node::getNeighbour(int direction)
             break;
         case 3: /*LEFT*/
             if(this->blank_field_column - 1 < 0)
-                break;
+            {
+                delete x;
+                return nullptr;
+            }
 
             x->n_puzzle_array[x->blank_field_row][x->blank_field_column] = x->n_puzzle_array[x->blank_field_row][x->blank_field_column - 1];
             x->n_puzzle_array[x->blank_field_row][x->blank_field_column - 1] = -1;
@@ -124,7 +135,6 @@ A_star_solver::Node* A_star_solver::Node::getNeighbour(int direction)
         default:
             break;
     }
-
     delete x;
     return nullptr;
 }
@@ -229,8 +239,9 @@ bool A_star_solver::isInClosedList(Node* node, std::vector<Node*> &closedSet)
     }
     return false;
 }
-A_star_solver::Node* A_star_solver::getFromOpenSet(Node *node, std::set<std::pair<int, Node *>> set)
+A_star_solver::Node* A_star_solver::getFromOpenSet(Node *node, std::multiset<std::pair<int, Node *>> set)
 {
+
     for(auto iter = set.begin(); iter != set.end(); iter++)
     {
         if(iter->second->n_puzzle_array == node->n_puzzle_array)
@@ -242,7 +253,7 @@ A_star_solver::Node* A_star_solver::getFromOpenSet(Node *node, std::set<std::pai
 std::vector<std::vector<std::vector<int>>> A_star_solver::solve()
 {
     auto start = std::chrono::high_resolution_clock::now();
-    std::set<std::pair<int, Node*>> openList; //zbior wierzcholkow nieodwiedzonych, sasiadujacych z odwiedzonymi
+    std::multiset<std::pair<int, Node*>> openList; //zbior wierzcholkow nieodwiedzonych, sasiadujacych z odwiedzonymi
     std::vector<Node*> closedList; //zbior wierzcholkow przejrzanych
 
     root->setHValue();
@@ -293,7 +304,6 @@ std::vector<std::vector<std::vector<int>>> A_star_solver::solve()
                 openList.insert(std::make_pair(y->f_value, y));
                 tentative_is_better = true;
             }
-
             else if(temp_g < y_fromOpenList->g_value)
             {
                 delete y;
@@ -311,7 +321,7 @@ std::vector<std::vector<std::vector<int>>> A_star_solver::solve()
     }
     auto stop = std::chrono::high_resolution_clock::now();
     loopIterations = closedList.size();
-    duration = std::chrono::duration_cast<std::chrono::milliseconds>(start - stop);
+    duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
 
     while (!openList.empty())
     {
@@ -319,11 +329,8 @@ std::vector<std::vector<std::vector<int>>> A_star_solver::solve()
         openList.erase(openList.begin());
     }
 
-    while(!closedList.empty())
-    {
-        delete closedList.at(0);
-        closedList.erase(closedList.begin());
-    }
+    for(auto & i : closedList)
+        delete i;
 
     return pathToGoal;
 }

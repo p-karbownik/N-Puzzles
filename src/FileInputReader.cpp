@@ -25,7 +25,6 @@ void FileInputReader::read()
     file >> puzzlesAmount;
     file >> whichSolver;
     file >> temp;
-    std::cout << puzzlesAmount << whichSolver << temp;
     if(temp == 1)
         displayPath = true;
 
@@ -33,7 +32,6 @@ void FileInputReader::read()
     {
         int dimension;
         file >> dimension;
-        std::cout << dimension;
         std::vector<std::vector<int>> aVector;
         for(int j = 0; j < dimension; j++)
         {
@@ -41,7 +39,6 @@ void FileInputReader::read()
             for (int k = 0; k < dimension; k++)
             {
                 file >> temp;
-                std::cout << temp;
                 innerVector.push_back(temp);
             }
             aVector.push_back(innerVector);

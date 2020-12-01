@@ -46,11 +46,22 @@ int main(int argc, char** argv)
         {
 
             auto solver2 = new A_star_solver(testV);
-            solver2->solve();
+            auto vect = solver2->solve();
             /*drukowanie statystyki */
             if(displayPath)
             {
-                /* funkcja drukowania */
+                std::cout << std::endl;
+                for(int i = 0; i < vect.size(); i++)
+                {
+                    std::cout << "i = " << i << std::endl;
+                    for(int j = 0; j < vect[0].size(); j++)
+                    {
+                        for(int k = 0; k < vect[0].size(); k++)
+                            std::cout << vect[i][j][k] << " ";
+                        std::cout << std::endl;
+                    }
+                    /* funkcja drukowania */
+                }
             }
             delete solver2;
         }
@@ -76,13 +87,22 @@ int main(int argc, char** argv)
             {
 
                 auto solver2 = new A_star_solver(fir.getPuzzleToSolve());
-                solver2->solve();
-                /*drukowanie statystyki */
+                auto vect = solver2->solve();
                 std::cout << fir.getDisplayPath();
                 if(fir.getDisplayPath())
                 {
-                    std::cout << 0;
+                    std::cout << std::endl;
+                    for(int i = 0; i < vect.size(); i++)
+                    {
+                        std::cout << "i = " << i << std::endl;
+                        for(int j = 0; j < vect[0].size(); j++)
+                        {
+                            for(int k = 0; k < vect[0].size(); k++)
+                                std::cout << vect[i][j][k] << " ";
+                            std::cout << std::endl;
+                        }
                     /* funkcja drukowania */
+                    }
                 }
                 delete solver2;
             }

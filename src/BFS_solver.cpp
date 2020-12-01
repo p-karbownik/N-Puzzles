@@ -75,6 +75,7 @@ bool BFS_solver::solve(){
             }
         }
     }
+    return true;
 }
 
 vector<vector<vector<int> > > BFS_solver::get_solution() {
@@ -82,6 +83,7 @@ vector<vector<vector<int> > > BFS_solver::get_solution() {
     for (int i = solution.size() - 1; i >= 0; i--) {
         result.push_back(solution[i]->grid);
     }
+    return result;
 }
 
 BFS_solver::Node* BFS_solver::move_up(Node *current) {
