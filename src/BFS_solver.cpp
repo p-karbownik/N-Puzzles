@@ -28,11 +28,15 @@ BFS_solver::BFS_solver(vector<vector<int> > init) {
     }
 }
 
+BFS_solver::~BFS_solver() {
+    delete root;
+}
+
 bool BFS_solver::solve(){
     Solvability_verifier verifier;
     if (!verifier.solvable(root->grid, blank_value)) return false;
 
-    queue<Node*> toCheck;
+    
     toCheck.push(root);
     while(!toCheck.empty()) {
         Node* current = toCheck.front();
@@ -85,20 +89,31 @@ vector<vector<vector<int> > > BFS_solver::get_solution() {
 }
 
 BFS_solver::Node* BFS_solver::move_up(Node *current) {
-    return new Node(current, current->x_blank, current->y_blank + 1);
+    Node* temp = new Node(current, current->x_blank, current->y_blank + 1);
+    current->children[0] = temp;
+    return temp;
 }
 BFS_solver::Node* BFS_solver::move_right(Node *current) {
-    return new Node(current, current->x_blank - 1, current->y_blank);
+    Node* temp = new Node(current, current->x_blank - 1, current->y_blank);
+    current->children[1] = temp;
+    return temp;
 }
 BFS_solver::Node* BFS_solver::move_down(Node *current) {
-    return new Node(current, current->x_blank, current->y_blank - 1);
+    Node* temp = new Node(current, current->x_blank, current->y_blank - 1);
+    current->children[2] = temp;
+    return temp;
 }
 BFS_solver::Node* BFS_solver::move_left(Node *current) {
-    return new Node(current, current->x_blank + 1, current->y_blank);
+    Node* temp = new Node(current, current->x_blank + 1, current->y_blank);
+    current->children[3] = temp;
+    return temp;
 }
 
 BFS_solver::Node::Node(Node *prev, int x, int y) {
     parent = prev;
+    for (int i = 0; i < 4; i++) {
+        children[i] = nullptr;
+    }
     y_blank = y;
     x_blank = x;
     grid = prev->grid;
@@ -109,6 +124,9 @@ BFS_solver::Node::Node(Node *prev, int x, int y) {
 
 BFS_solver::Node::Node(vector<vector<int> > pos) {
     parent = nullptr;
+    for (int i = 0; i < 4; i++) {
+        children[i] = nullptr;
+    }
     grid = pos;
     for (int i = 0; i < pos.size(); i++) {
         for (int j = 0; j < pos.size(); j++) {
@@ -117,6 +135,13 @@ BFS_solver::Node::Node(vector<vector<int> > pos) {
                 x_blank = j;
             }
         }
+    }
+}
+
+BFS_solver::Node::~Node() {
+    for (int i = 0; i < 4; i++) {
+        if (children[i] != nullptr) 
+            delete children[i];
     }
 }
 
