@@ -5,6 +5,7 @@
 #include "BFS_solver.hpp"
 #include "A_star_solver.h"
 #include "Pattern_generator.hpp"
+#include "FileInputReader.h"
 
 using namespace std;
 
@@ -45,38 +46,69 @@ int main(int argc, char** argv)
         {
 
             auto solver2 = new A_star_solver(testV);
-            solver2->solve();
+            auto vect = solver2->solve();
             /*drukowanie statystyki */
             if(displayPath)
             {
-                solver2->printSolution();
+                std::cout << std::endl;
+                for(int i = 0; i < vect.size(); i++)
+                {
+                    std::cout << "i = " << i << std::endl;
+                    for(int j = 0; j < vect[0].size(); j++)
+                    {
+                        for(int k = 0; k < vect[0].size(); k++)
+                            std::cout << vect[i][j][k] << " ";
+                        std::cout << std::endl;
+                    }
+                    /* funkcja drukowania */
+                }
             }
             delete solver2;
         }
     }
-    // std::cout << "Hello, World!!!" << std::endl;
+    else if (argc == 1)
+    {
+        FileInputReader fir = FileInputReader("wej.txt");
+        fir.read();
 
-    // vector<vector<int> > testV = {
-    //     {-1, 1, 3},
-    //     { 4, 2, 5},
-    //     { 7, 8, 6}
-    // };
-    // BFS_solver solver1 = BFS_solver(testV);
-    // solver1.solve();
-  
-    // std::vector<std::vector<int>> board =
-    //         {
-    //                 {5, 9, 3, 4},
-    //                 {6, 10, 14, 8},
-    //                 {0, 13, 2, 15},
-    //                 {11, 7, 12, 1}
-    //         };
-    // auto solver2 = new A_star_solver(testV);
-    // clock_t start = clock();
-    // std::cout << solver2->solve() << std::endl;
-    // std::cout << "czas wykonania " << ( clock() - start ) / CLOCKS_PER_SEC<< std::endl;
-    // solver2->printSolution();
-    // std::cout << 5861044965 / CLOCKS_PER_SEC;
+        for(int i = 0; i < fir.getPuzzlesAmount(); i++)
+        {
+            if(fir.getWhichSolver() == 0 || fir.getWhichSolver() == 2)
+            {
+                std::cout << "Szukanie rozwiazania przy uzyciu BFS" << std::endl;
+                BFS_solver solver1 = BFS_solver(fir.getPuzzleToSolve());
+                solver1.solve();
+                /* drukowanie statystyki*/
+
+                if(fir.getDisplayPath())
+                {  }// wyswietl Path}
+            }
+            if(fir.getWhichSolver() == 1 || fir.getWhichSolver() == 2)
+            {
+
+                auto solver2 = new A_star_solver(fir.getPuzzleToSolve());
+                auto vect = solver2->solve();
+                std::cout << fir.getDisplayPath();
+                if(fir.getDisplayPath())
+                {
+                    std::cout << std::endl;
+                    for(int i = 0; i < vect.size(); i++)
+                    {
+                        std::cout << "i = " << i << std::endl;
+                        for(int j = 0; j < vect[0].size(); j++)
+                        {
+                            for(int k = 0; k < vect[0].size(); k++)
+                                std::cout << vect[i][j][k] << " ";
+                            std::cout << std::endl;
+                        }
+                    /* funkcja drukowania */
+                    }
+                }
+                delete solver2;
+            }
+            fir.setNextPuzzle();
+        }
+    }
 
     return 0;
 }
