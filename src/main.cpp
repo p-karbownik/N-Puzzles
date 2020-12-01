@@ -6,6 +6,7 @@
 #include "A_star_solver.h"
 #include "Pattern_generator.hpp"
 #include "FileInputReader.h"
+#include "Solution_printer.hpp"
 
 using namespace std;
 
@@ -21,12 +22,7 @@ int main(int argc, char** argv)
         generator.generate(testV, dimension * dimension - 1);
 
         std::cout << "Wyegenerowany przypadek" << std::endl;
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++) {
-                cout << testV[i][j] << " ";
-            }
-            cout << endl;
-        }
+        Solution_printer::print_grid(testV);
 
         bool displayPath = atoi(argv[3]) == 1;
         int whichSolver = atoi(argv[2]); /* 0 - BFS, 1 - A*, 2 - both */
@@ -36,33 +32,28 @@ int main(int argc, char** argv)
             std::cout << "Szukanie rozwiazania przy uzyciu BFS" << std::endl;
             BFS_solver solver1 = BFS_solver(testV);
             solver1.solve();
+            auto solution = solver1.get_solution();
             /* drukowanie statystyki*/
 
             if(displayPath)
-            {  }// wyswietl Path}
+            {
+                Solution_printer::print_solution(solution);
+            }
         }
 
         if(whichSolver == 1 || whichSolver == 2)
         {
 
             auto solver2 = new A_star_solver(testV);
-            auto vect = solver2->solve();
-            /*drukowanie statystyki */
+            auto solution = solver2->solve();
+
+            std::cout << "Czas: " << solver2->getDuration().count() << " Iteracje pętli: " << solver2->getLoopIterations() << std::endl;
+
             if(displayPath)
             {
-                std::cout << std::endl;
-                for(int i = 0; i < vect.size(); i++)
-                {
-                    std::cout << "i = " << i << std::endl;
-                    for(int j = 0; j < vect[0].size(); j++)
-                    {
-                        for(int k = 0; k < vect[0].size(); k++)
-                            std::cout << vect[i][j][k] << " ";
-                        std::cout << std::endl;
-                    }
-                    /* funkcja drukowania */
-                }
+                Solution_printer::print_solution(solution);
             }
+
             delete solver2;
         }
     }
@@ -78,32 +69,30 @@ int main(int argc, char** argv)
                 std::cout << "Szukanie rozwiazania przy uzyciu BFS" << std::endl;
                 BFS_solver solver1 = BFS_solver(fir.getPuzzleToSolve());
                 solver1.solve();
-                /* drukowanie statystyki*/
+
+                //std::cout << "Czas: " << solver1->getDuration().count() << " Iteracje pętli: " << solver1->getLoopIterations() << std::endl;
+
+                auto solution = solver1.get_solution();
 
                 if(fir.getDisplayPath())
-                {  }// wyswietl Path}
+                {
+                    Solution_printer::print_solution(solution) ;
+                }
             }
             if(fir.getWhichSolver() == 1 || fir.getWhichSolver() == 2)
             {
+                std::cout << "Szukanie rozwiazania przy uzyciu A*" << std::endl;
 
                 auto solver2 = new A_star_solver(fir.getPuzzleToSolve());
-                auto vect = solver2->solve();
-                std::cout << fir.getDisplayPath();
+                auto solution = solver2->solve();
+
+                std::cout << "Czas: " << solver2->getDuration().count() << " Iteracje pętli: " << solver2->getLoopIterations() << std::endl;
+
                 if(fir.getDisplayPath())
                 {
-                    std::cout << std::endl;
-                    for(int i = 0; i < vect.size(); i++)
-                    {
-                        std::cout << "i = " << i << std::endl;
-                        for(int j = 0; j < vect[0].size(); j++)
-                        {
-                            for(int k = 0; k < vect[0].size(); k++)
-                                std::cout << vect[i][j][k] << " ";
-                            std::cout << std::endl;
-                        }
-                    /* funkcja drukowania */
-                    }
+                    Solution_printer::print_solution(solution) ;
                 }
+
                 delete solver2;
             }
             fir.setNextPuzzle();
