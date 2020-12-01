@@ -355,6 +355,5 @@ A_star_solver::~A_star_solver()
     {
         delete i;
     }
-    delete root;
     delete goal;
 }

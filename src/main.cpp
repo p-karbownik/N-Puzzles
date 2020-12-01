@@ -5,6 +5,7 @@
 #include "BFS_solver.hpp"
 #include "A_star_solver.h"
 #include "Pattern_generator.hpp"
+#include "FileInputReader.h"
 
 using namespace std;
 
@@ -54,29 +55,40 @@ int main(int argc, char** argv)
             delete solver2;
         }
     }
-    // std::cout << "Hello, World!!!" << std::endl;
+    else if (argc == 1)
+    {
+        FileInputReader fir = FileInputReader("wej.txt");
+        fir.read();
 
-    // vector<vector<int> > testV = {
-    //     {-1, 1, 3},
-    //     { 4, 2, 5},
-    //     { 7, 8, 6}
-    // };
-    // BFS_solver solver1 = BFS_solver(testV);
-    // solver1.solve();
-  
-    // std::vector<std::vector<int>> board =
-    //         {
-    //                 {5, 9, 3, 4},
-    //                 {6, 10, 14, 8},
-    //                 {0, 13, 2, 15},
-    //                 {11, 7, 12, 1}
-    //         };
-    // auto solver2 = new A_star_solver(testV);
-    // clock_t start = clock();
-    // std::cout << solver2->solve() << std::endl;
-    // std::cout << "czas wykonania " << ( clock() - start ) / CLOCKS_PER_SEC<< std::endl;
-    // solver2->printSolution();
-    // std::cout << 5861044965 / CLOCKS_PER_SEC;
+        for(int i = 0; i < fir.getPuzzlesAmount(); i++)
+        {
+            if(fir.getWhichSolver() == 0 || fir.getWhichSolver() == 2)
+            {
+                std::cout << "Szukanie rozwiazania przy uzyciu BFS" << std::endl;
+                BFS_solver solver1 = BFS_solver(fir.getPuzzleToSolve());
+                solver1.solve();
+                /* drukowanie statystyki*/
+
+                if(fir.getDisplayPath())
+                {  }// wyswietl Path}
+            }
+            if(fir.getWhichSolver() == 1 || fir.getWhichSolver() == 2)
+            {
+
+                auto solver2 = new A_star_solver(fir.getPuzzleToSolve());
+                solver2->solve();
+                /*drukowanie statystyki */
+                std::cout << fir.getDisplayPath();
+                if(fir.getDisplayPath())
+                {
+                    std::cout << 0;
+                    solver2->printSolution();
+                }
+                delete solver2;
+            }
+            fir.setNextPuzzle();
+        }
+    }
 
     return 0;
 }
