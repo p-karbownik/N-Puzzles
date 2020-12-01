@@ -39,7 +39,8 @@ public:
     BFS_solver(std::vector<std::vector<int> > init);
 
     bool solve();
-    void print_solution();
+    vector<vector<vector<int> > > get_solution();
+    // void print_solution();
 };
 
 #endif //NPUZZLES_BFS_SOLVER

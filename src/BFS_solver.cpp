@@ -77,26 +77,31 @@ bool BFS_solver::solve(){
     }
 }
 
-
-void BFS_solver::print_solution() {
-    int size = solution.size();
-    for (int i = size - 2; i >= 0; i--) {
-        cout << size - i - 1 << ": " << endl;
-        // cout << "(" << solution[i]->y_blank << ", " << solution[i]->x_blank << ") ";
-        // cout << ((solution[i]->last_move == Direction::Up) ? "UP" : 
-        //     ((solution[i]->last_move == Direction::Right) ? "RIGHT" : 
-        //     ((solution[i]->last_move == Direction::Down) ? "DOWN" : "LEFT"))) << endl;
-        for(int j = 0; j < puzzleSize; j++)
-        {
-            for(int k = 0; k < puzzleSize; k++)
-                std::cout << solution[i]->grid[j][k] << " ";
-            std::cout << std::endl;
-        }
-
-        std::cout << std::endl;
+vector<vector<vector<int> > > BFS_solver::get_solution() {
+    vector<vector<vector<int> > > result;
+    for (int i = solution.size() - 1; i >= 0; i--) {
+        result.push_back(solution[i]->grid);
     }
-
 }
+
+// void BFS_solver::print_solution() {
+//     int size = solution.size();
+//     for (int i = size - 2; i >= 0; i--) {
+//         cout << size - i - 1 << ": " << endl;
+//         // cout << "(" << solution[i]->y_blank << ", " << solution[i]->x_blank << ") ";
+//         // cout << ((solution[i]->last_move == Direction::Up) ? "UP" : 
+//         //     ((solution[i]->last_move == Direction::Right) ? "RIGHT" : 
+//         //     ((solution[i]->last_move == Direction::Down) ? "DOWN" : "LEFT"))) << endl;
+//         for(int j = 0; j < puzzleSize; j++)
+//         {
+//             for(int k = 0; k < puzzleSize; k++)
+//                 std::cout << solution[i]->grid[j][k] << " ";
+//             std::cout << std::endl;
+//         }
+
+//         std::cout << std::endl;
+//     }
+// }
 
 BFS_solver::Node* BFS_solver::move_up(Node *current) {
     return new Node(current, current->x_blank, current->y_blank + 1, Direction::Up);
