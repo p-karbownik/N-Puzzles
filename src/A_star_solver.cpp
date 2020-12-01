@@ -12,6 +12,7 @@ A_star_solver::Node::Node()
     h_value = 0;
     blank_field_column = -1;
     blank_field_row = -1;
+    parent = nullptr;
 }
 
 A_star_solver::Node::Node(std::vector<std::vector<int>> n_puzzle_array)
@@ -215,11 +216,11 @@ int A_star_solver::calculateLinearConflictsValue(Node *node)
     return linearConflictsValue;
 }
 
-bool A_star_solver::isInCloseList(Node* node, std::vector<Node*> &closedList)
+bool A_star_solver::isInClosedList(Node* node, std::vector<Node*> &closedSet)
 {
-    for(int i = 0; i < closedList.size(); i++)
+    for(int i = 0; i < closedSet.size(); i++)
     {
-        if(closedList.at(i)->n_puzzle_array == node->n_puzzle_array)
+        if(closedSet.at(i)->n_puzzle_array == node->n_puzzle_array)
             return true;
     }
     return false;
@@ -234,8 +235,9 @@ A_star_solver::Node* A_star_solver::getFromOpenSet(Node *node, std::set<std::pai
     return nullptr;
 }
 
-bool A_star_solver::solve()
+std::vector<std::vector<std::vector<int>>> A_star_solver::solve()
 {
+    auto start = std::chrono::high_resolution_clock::now();
     std::set<std::pair<int, Node*>> openList; //zbior wierzcholkow nieodwiedzonych, sasiadujacych z odwiedzonymi
     std::vector<Node*> closedList; //zbior wierzcholkow przejrzanych
 
@@ -244,7 +246,6 @@ bool A_star_solver::solve()
     root->f_value = root->h_value + root->g_value;
 
     openList.insert(std::make_pair(root->f_value, root));
-    bool result = false;
 
     while(!openList.empty())
     {
@@ -254,7 +255,6 @@ bool A_star_solver::solve()
         {
             openList.erase(openList.begin());
             reconstructPath(x);
-            result = true;
             break;
         }
 
@@ -270,7 +270,7 @@ bool A_star_solver::solve()
                 continue;
             }
 
-            if(isInCloseList(y, closedList))
+            if(isInClosedList(y, closedList))
             {
                 delete y;
                 continue;
@@ -305,6 +305,9 @@ bool A_star_solver::solve()
             }
         }
     }
+    auto stop = std::chrono::high_resolution_clock::now();
+    loopIterations = closedList.size();
+    duration = std::chrono::duration_cast<std::chrono::milliseconds>(start - stop);
 
     while (!openList.empty())
     {
@@ -314,13 +317,11 @@ bool A_star_solver::solve()
 
     while(!closedList.empty())
     {
-        if(!closedList.at(0)->isVisited)
-        {
-            delete closedList.at(0);
-        }
+        delete closedList.at(0);
         closedList.erase(closedList.begin());
     }
-    return result;
+
+    return pathToGoal;
 }
 
 void A_star_solver::reconstructPath(Node *node)
@@ -330,30 +331,20 @@ void A_star_solver::reconstructPath(Node *node)
         reconstructPath(node->parent);
     }
     node->isVisited = true;
-    pathToGoal.push_back(node);
-}
-
-void A_star_solver::printSolution()
-{
-    for(int i = 0; i < pathToGoal.size(); i++)
-    {
-        std::cout << "i = " << i << std::endl;
-        for(int j = 0; j < dimension; j++)
-        {
-            for(int k = 0; k < dimension; k++)
-                std::cout << pathToGoal[i]->n_puzzle_array[j][k] << " ";
-            std::cout << std::endl;
-        }
-
-        std::cout << std::endl;
-    }
+    pathToGoal.push_back(node->n_puzzle_array);
 }
 
 A_star_solver::~A_star_solver()
 {
-    for(auto & i : pathToGoal)
-    {
-        delete i;
-    }
     delete goal;
+}
+
+std::chrono::milliseconds A_star_solver::getDuration()
+{
+    return duration;
+}
+
+int A_star_solver::getLoopIterations()
+{
+    return loopIterations;
 }

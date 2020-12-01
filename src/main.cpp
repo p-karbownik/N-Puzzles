@@ -50,7 +50,7 @@ int main(int argc, char** argv)
             /*drukowanie statystyki */
             if(displayPath)
             {
-                solver2->printSolution();
+                /* funkcja drukowania */
             }
             delete solver2;
         }
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
                 if(fir.getDisplayPath())
                 {
                     std::cout << 0;
-                    solver2->printSolution();
+                    /* funkcja drukowania */
                 }
                 delete solver2;
             }

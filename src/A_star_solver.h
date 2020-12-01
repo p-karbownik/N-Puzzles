@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <cstdlib>
+#include <chrono>
 
 class A_star_solver
 {
@@ -34,12 +35,18 @@ private:
     Node* root;
     Node* goal;
 
+    int dimension;
+    std::chrono::milliseconds duration;
+    int loopIterations;
+
+    std::vector<std::vector<std::vector<int>>> pathToGoal;
+
     int calculateManhattanDistanceValue(Node* node);
     int calculateLinearConflictsValue(Node* node);
     int calculateHValue(Node* node);
-    int dimension;
-    std::vector<Node*> pathToGoal;
+
     Node* getFromOpenSet(Node* node, std::set<std::pair<int, Node*>>);
+    bool isInClosedList(Node* node, std::vector<Node*> &closedSet);
     void reconstructPath(Node* end);
 
 public:
@@ -49,10 +56,10 @@ public:
         dimension = root_array.size();
         goal = new Node(dimension);
     };
-    bool solve();
-    void printSolution();
-    bool isInCloseList(Node* node, std::vector<Node*> &closedSet);
+    std::vector<std::vector<std::vector<int>>> solve();
     ~A_star_solver();
+    std::chrono::milliseconds getDuration();
+    int getLoopIterations();
 };
 
 
