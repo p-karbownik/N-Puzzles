@@ -3,6 +3,8 @@
 using namespace std;
 
 bool Solvability_verifier::solvable(vector<vector<int> > &grid, int blank_value) {
+    if(grid.empty()) return false;
+    
     int row_length = grid.size();
     int grid_length = row_length * row_length;
     bool grid_length_odd = grid_length & 1;
