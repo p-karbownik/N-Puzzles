@@ -28,11 +28,6 @@ private:
         Node(std::vector<std::vector<int>> n_puzzle_array);
         Node(const Node &node);
         Node(int dimension);
-
-        bool operator<(const Node& node) const;
-        bool operator>(const Node& node) const;
-        bool operator==(const Node& node) const;
-
         Node* getNeighbour(int direction);
     };
 
@@ -48,7 +43,7 @@ private:
     void reconstructPath(Node* end);
 
 public:
-    A_star_solver(std::vector<std::vector<int>> root_array)
+    explicit A_star_solver(std::vector<std::vector<int>> root_array)
     {
         root = new Node(root_array);
         dimension = root_array.size();
@@ -57,6 +52,7 @@ public:
     bool solve();
     void printSolution();
     bool isInCloseList(Node* node, std::vector<Node*> &closedSet);
+    ~A_star_solver();
 };
 
 
