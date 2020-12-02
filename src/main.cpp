@@ -21,7 +21,7 @@ int main(int argc, char** argv)
         vector<vector<int> > testV;
         generator.generate(testV, dimension * dimension - 1);
 
-        std::cout << "Wyegenerowany przypadek" << std::endl;
+        std::cout << "Wygenerowany przypadek" << std::endl;
         Solution_printer::print_grid(testV);
 
         bool displayPath = atoi(argv[3]) == 1;
@@ -33,7 +33,8 @@ int main(int argc, char** argv)
             BFS_solver solver1 = BFS_solver(testV);
             solver1.solve();
             auto solution = solver1.get_solution();
-            /* drukowanie statystyki*/
+            
+            std::cout << "Czas: " << solver1.getDuration().count() << " Iteracje pętli: " << solver1.getLoopIterations() << std::endl;
 
             if(displayPath)
             {
@@ -68,9 +69,10 @@ int main(int argc, char** argv)
             {
                 std::cout << "Szukanie rozwiazania przy uzyciu BFS" << std::endl;
                 BFS_solver solver1 = BFS_solver(fir.getPuzzleToSolve());
-                solver1.solve();
+                if (!solver1.solve())
+                    cout << "Rozwiązanie nie jest możliwe";
 
-                //std::cout << "Czas: " << solver1->getDuration().count() << " Iteracje pętli: " << solver1->getLoopIterations() << std::endl;
+                std::cout << "Czas: " << solver1.getDuration().count() << " Iteracje pętli: " << solver1.getLoopIterations() << std::endl;
 
                 auto solution = solver1.get_solution();
 

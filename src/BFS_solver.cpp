@@ -2,6 +2,7 @@
 #include<vector>
 #include<unordered_set>
 #include<queue>
+#include<chrono>
 
 #include<boost/functional/hash.hpp>
 
@@ -28,6 +29,8 @@ BFS_solver::BFS_solver(vector<vector<int> > init) {
         goal.y_blank = puzzleSize - 1;
         goal.x_blank = puzzleSize - 1;
     }
+
+    loop_iterations = 0;
 }
 
 BFS_solver::~BFS_solver() {
@@ -37,6 +40,8 @@ BFS_solver::~BFS_solver() {
 bool BFS_solver::solve(){
     Solvability_verifier verifier;
     if (!verifier.solvable(root->grid, blank_value)) return false;
+
+    auto start = chrono::high_resolution_clock::now();
 
     queue<Node*> toCheck;
     toCheck.push(root);
@@ -50,6 +55,8 @@ bool BFS_solver::solve(){
                 current = current->parent;
                 solution.push_back(current);
             }
+            auto stop = chrono::high_resolution_clock::now();
+            duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
             return true;
         }
 
@@ -81,8 +88,13 @@ bool BFS_solver::solve(){
                 toCheck.push(next_left);
             }
         }
+        loop_iterations++;
     }
-    return true;
+
+    auto stop = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
+
+    return false;
 }
 
 vector<vector<vector<int> > > BFS_solver::get_solution() {
@@ -166,4 +178,12 @@ std::size_t BFS_solver::node_hash::operator()(const Node &N) const {
         row_hashes.push_back(vector_hash(N.grid[i]));
     }
     return vector_hash(row_hashes);
+}
+
+std::chrono::milliseconds BFS_solver::getDuration() {
+    return duration;
+}
+
+int BFS_solver::getLoopIterations() {
+    return loop_iterations;
 }
