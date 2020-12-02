@@ -55,6 +55,8 @@ bool BFS_solver::solve(){
                 current = current->parent;
                 solution.push_back(current);
             }
+            auto stop = chrono::high_resolution_clock::now();
+            duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
             return true;
         }
 
@@ -92,7 +94,7 @@ bool BFS_solver::solve(){
     auto stop = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
-    return true;
+    return false;
 }
 
 vector<vector<vector<int> > > BFS_solver::get_solution() {
