@@ -44,7 +44,7 @@ private:
 
     std::vector<std::vector<std::vector<int>>> pathToGoal;
 
-    Node* getFromOpenSet(Node* node, std::multiset<std::pair<int, Node*>>);
+    Node* getFromOpenSet(Node* node, std::set<std::pair<int, Node*>>);
     bool isInClosedList(Node* node, std::vector<Node*> &closedSet);
     void reconstructPath(Node* end);
 

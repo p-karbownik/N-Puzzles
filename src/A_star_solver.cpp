@@ -239,7 +239,7 @@ bool A_star_solver::isInClosedList(Node* node, std::vector<Node*> &closedSet)
     }
     return false;
 }
-A_star_solver::Node* A_star_solver::getFromOpenSet(Node *node, std::multiset<std::pair<int, Node *>> set)
+A_star_solver::Node* A_star_solver::getFromOpenSet(Node *node, std::set<std::pair<int, Node *>> set)
 {
 
     for(auto iter = set.begin(); iter != set.end(); iter++)
@@ -253,27 +253,33 @@ A_star_solver::Node* A_star_solver::getFromOpenSet(Node *node, std::multiset<std
 std::vector<std::vector<std::vector<int>>> A_star_solver::solve()
 {
     auto start = std::chrono::high_resolution_clock::now();
-    std::multiset<std::pair<int, Node*>> openList; //zbior wierzcholkow nieodwiedzonych, sasiadujacych z odwiedzonymi
+
+    std::set<std::pair<int, Node*>> openSet; //zbior wierzcholkow nieodwiedzonych, sasiadujacych z odwiedzonymi
     std::vector<Node*> closedList; //zbior wierzcholkow przejrzanych
+    std::vector<Node*> allGeneratedNodes;
+    allGeneratedNodes.push_back(root);
 
     root->setHValue();
     root->g_value = 0;
     root->f_value = root->h_value + root->g_value;
 
-    openList.insert(std::make_pair(root->f_value, root));
+    openSet.insert(std::make_pair(root->f_value, root));
 
-    while(!openList.empty())
+    loopIterations = 0;
+
+    while(!openSet.empty())
     {
-        Node* x = openList.begin()->second;
+        Node* x = openSet.begin()->second;
+        loopIterations++;
 
         if(x->n_puzzle_array == goal->n_puzzle_array)
         {
-            openList.erase(openList.begin());
+            openSet.erase(openSet.begin());
             reconstructPath(x);
             break;
         }
 
-        openList.erase(openList.begin());
+        openSet.erase(openSet.begin());
         closedList.push_back(x);
 
         for(int i = 0; i < 4; i++)
@@ -281,19 +287,16 @@ std::vector<std::vector<std::vector<int>>> A_star_solver::solve()
             Node* y = x->getNeighbour(i);
 
             if(y == nullptr)
-            {
                 continue;
-            }
+
+            allGeneratedNodes.push_back(y);
 
             if(isInClosedList(y, closedList))
-            {
-                delete y;
                 continue;
-            }
 
             int temp_g = x->g_value + 1;
 
-            Node* y_fromOpenList = getFromOpenSet(y, openList);
+            Node* y_fromOpenList = getFromOpenSet(y, openSet);
             bool tentative_is_better = false;
 
             if(y_fromOpenList == nullptr)
@@ -301,12 +304,11 @@ std::vector<std::vector<std::vector<int>>> A_star_solver::solve()
                 y->setHValue();
                 y->g_value = temp_g;
                 y->f_value = y->h_value + y->g_value;
-                openList.insert(std::make_pair(y->f_value, y));
+                openSet.insert(std::make_pair(y->f_value, y));
                 tentative_is_better = true;
             }
             else if(temp_g < y_fromOpenList->g_value)
             {
-                delete y;
                 y = y_fromOpenList;
                 tentative_is_better = true;
             }
@@ -319,17 +321,11 @@ std::vector<std::vector<std::vector<int>>> A_star_solver::solve()
             }
         }
     }
+
     auto stop = std::chrono::high_resolution_clock::now();
-    loopIterations = closedList.size();
     duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
 
-    while (!openList.empty())
-    {
-        delete openList.begin()->second;
-        openList.erase(openList.begin());
-    }
-
-    for(auto & i : closedList)
+    for(auto & i : allGeneratedNodes)
         delete i;
 
     return pathToGoal;
