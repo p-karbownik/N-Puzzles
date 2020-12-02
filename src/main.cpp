@@ -30,16 +30,17 @@ int main(int argc, char** argv)
         if(whichSolver == 0 || whichSolver == 2)
         {
             std::cout << "Szukanie rozwiazania przy uzyciu BFS" << std::endl;
-            BFS_solver solver1 = BFS_solver(testV);
-            solver1.solve();
-            auto solution = solver1.get_solution();
+            auto solver1 = new BFS_solver(testV);
+            solver1->solve();
+            auto solution = solver1->get_solution();
             
-            std::cout << "Czas: " << solver1.getDuration().count() << " Iteracje pętli: " << solver1.getLoopIterations() << std::endl;
+            std::cout << "Czas: " << solver1->getDuration().count() << " Iteracje pętli: " << solver1->getLoopIterations() << std::endl;
 
             if(displayPath)
             {
                 Solution_printer::print_solution(solution);
             }
+            delete solver1;
         }
 
         if(whichSolver == 1 || whichSolver == 2)
@@ -68,21 +69,22 @@ int main(int argc, char** argv)
             if(fir.getWhichSolver() == 0 || fir.getWhichSolver() == 2)
             {
                 std::cout << "Szukanie rozwiazania przy uzyciu BFS" << std::endl;
-                BFS_solver solver1 = BFS_solver(fir.getPuzzleToSolve());
-                if (!solver1.solve())
+                auto solver1 = new BFS_solver(fir.getPuzzleToSolve());
+                if (!solver1->solve())
                 {
                     cout << "Rozwiązanie nie jest możliwe" << std::endl;
                     continue;
                 }
 
-                std::cout << "Czas: " << solver1.getDuration().count() << " Iteracje pętli: " << solver1.getLoopIterations() << std::endl;
+                std::cout << "Czas: " << solver1->getDuration().count() << " Iteracje pętli: " << solver1->getLoopIterations() << std::endl;
 
-                auto solution = solver1.get_solution();
+                auto solution = solver1->get_solution();
 
                 if(fir.getDisplayPath())
                 {
                     Solution_printer::print_solution(solution) ;
                 }
+                delete solver1;
             }
             if(fir.getWhichSolver() == 1 || fir.getWhichSolver() == 2)
             {
