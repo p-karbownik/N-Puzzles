@@ -3,6 +3,7 @@
 
 #include<vector>
 #include<unordered_set>
+#include<chrono>
 
 
 class BFS_solver {
@@ -34,6 +35,9 @@ class BFS_solver {
     Node goal;
     std::vector<Node*> solution;
 
+    int loop_iterations;
+    std::chrono::milliseconds duration;
+
     Node* move_up(Node *current);
     Node* move_right(Node *current);
     Node* move_down(Node *current);
@@ -44,6 +48,9 @@ public:
 
     bool solve();
     std::vector<std::vector<std::vector<int> > > get_solution();
+
+    std::chrono::milliseconds getDuration();
+    int getLoopIterations();
 };
 
 #endif //NPUZZLES_BFS_SOLVER
