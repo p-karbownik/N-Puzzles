@@ -7,12 +7,16 @@
 
 #include <vector>
 #include <cstdlib>
+#include <chrono>
 
 class A_star_solver
 {
 private:
     class Node
     {
+    private:
+        int calculateManhattanDistanceValue();
+        int calculateLinearConflictsValue();
     public:
         std::vector<std::vector<int>> n_puzzle_array;
         bool isVisited;
@@ -29,29 +33,33 @@ private:
         Node(const Node &node);
         Node(int dimension);
         Node* getNeighbour(int direction);
+        void setHValue();
     };
 
     Node* root;
     Node* goal;
 
-    int calculateManhattanDistanceValue(Node* node);
-    int calculateLinearConflictsValue(Node* node);
-    int calculateHValue(Node* node);
-    int dimension;
-    std::vector<Node*> pathToGoal;
+    std::chrono::milliseconds duration;
+    int loopIterations;
+
+    std::vector<std::vector<std::vector<int>>> pathToGoal;
+
     Node* getFromOpenSet(Node* node, std::set<std::pair<int, Node*>>);
+    bool isInClosedList(Node* node, std::vector<Node*> &closedSet);
     void reconstructPath(Node* end);
 
 public:
-    A_star_solver(std::vector<std::vector<int>> root_array)
+    explicit A_star_solver(std::vector<std::vector<int>> root_array)
     {
         root = new Node(root_array);
-        dimension = root_array.size();
-        goal = new Node(dimension);
+        goal = new Node(root_array.size());
     };
+
     bool solve();
-    void printSolution();
-    bool isInCloseList(Node* node, std::vector<Node*> &closedSet);
+    ~A_star_solver();
+    std::chrono::milliseconds getDuration();
+    int getLoopIterations();
+    std::vector<std::vector<std::vector<int>>> getPathToGoal();
 };
 
 
