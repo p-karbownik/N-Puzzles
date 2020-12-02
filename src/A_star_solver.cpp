@@ -3,6 +3,7 @@
 #include <utility>
 #include <iostream>
 #include "A_star_solver.h"
+#include "Solvability_verifier.hpp"
 
 A_star_solver::Node::Node()
 {
@@ -250,9 +251,17 @@ A_star_solver::Node* A_star_solver::getFromOpenSet(Node *node, std::set<std::pai
     return nullptr;
 }
 
-std::vector<std::vector<std::vector<int>>> A_star_solver::solve()
+bool A_star_solver::solve()
 {
+    Solvability_verifier s_v;
+    if(!s_v.solvable(root->n_puzzle_array, -1))
+    {
+        delete root;
+        return false;
+
+    }
     auto start = std::chrono::high_resolution_clock::now();
+    bool result = false;
 
     std::set<std::pair<int, Node*>> openSet; //zbior wierzcholkow nieodwiedzonych, sasiadujacych z odwiedzonymi
     std::vector<Node*> closedList; //zbior wierzcholkow przejrzanych
@@ -276,6 +285,7 @@ std::vector<std::vector<std::vector<int>>> A_star_solver::solve()
         {
             openSet.erase(openSet.begin());
             reconstructPath(x);
+            result = true;
             break;
         }
 
@@ -328,7 +338,7 @@ std::vector<std::vector<std::vector<int>>> A_star_solver::solve()
     for(auto & i : allGeneratedNodes)
         delete i;
 
-    return pathToGoal;
+    return result;
 }
 
 void A_star_solver::reconstructPath(Node *node)
@@ -354,4 +364,9 @@ std::chrono::milliseconds A_star_solver::getDuration()
 int A_star_solver::getLoopIterations()
 {
     return loopIterations;
+}
+
+std::vector<std::vector<std::vector<int>>> A_star_solver::getPathToGoal()
+{
+    return pathToGoal;
 }

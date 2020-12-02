@@ -46,10 +46,10 @@ int main(int argc, char** argv)
         {
 
             auto solver2 = new A_star_solver(testV);
-            auto solution = solver2->solve();
+            solver2->solve();
 
             std::cout << "Czas: " << solver2->getDuration().count() << " Iteracje pętli: " << solver2->getLoopIterations() << std::endl;
-
+            auto solution = solver2->getPathToGoal();
             if(displayPath)
             {
                 Solution_printer::print_solution(solution);
@@ -70,7 +70,10 @@ int main(int argc, char** argv)
                 std::cout << "Szukanie rozwiazania przy uzyciu BFS" << std::endl;
                 BFS_solver solver1 = BFS_solver(fir.getPuzzleToSolve());
                 if (!solver1.solve())
-                    cout << "Rozwiązanie nie jest możliwe";
+                {
+                    cout << "Rozwiązanie nie jest możliwe" << std::endl;
+                    continue;
+                }
 
                 std::cout << "Czas: " << solver1.getDuration().count() << " Iteracje pętli: " << solver1.getLoopIterations() << std::endl;
 
@@ -86,7 +89,13 @@ int main(int argc, char** argv)
                 std::cout << "Szukanie rozwiazania przy uzyciu A*" << std::endl;
 
                 auto solver2 = new A_star_solver(fir.getPuzzleToSolve());
-                auto solution = solver2->solve();
+                if(!solver2->solve())
+                {
+                    std::cout << "Rozwiazanie nie jest mozliwe" << std::endl;
+                    continue;
+                }
+
+                auto solution = solver2->getPathToGoal();
 
                 std::cout << "Czas: " << solver2->getDuration().count() << " Iteracje pętli: " << solver2->getLoopIterations() << std::endl;
 

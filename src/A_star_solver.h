@@ -54,10 +54,12 @@ public:
         root = new Node(root_array);
         goal = new Node(root_array.size());
     };
-    std::vector<std::vector<std::vector<int>>> solve();
+
+    bool solve();
     ~A_star_solver();
     std::chrono::milliseconds getDuration();
     int getLoopIterations();
+    std::vector<std::vector<std::vector<int>>> getPathToGoal();
 };
 
 
